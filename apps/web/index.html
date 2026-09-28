@@ -767,11 +767,17 @@
         padding: 14px;
         gap: 12px;
       }
-      .brand-area { justify-content: flex-start; }
+      .brand-area { justify-content: flex-start; align-items: center; gap: 10px; }
       .brand-text h1 { font-size: 18px; }
       .nav-tabs { flex-wrap: wrap; }
       .tab-btn { flex: 1 1 46%; justify-content: center; font-size: 12px; padding: 9px 6px; }
-      .status-group { flex-wrap: wrap; gap: 6px; }
+      .status-group { flex-direction: column; align-items: stretch; gap: 6px; }
+      .status-group .pill {
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .card { padding: 16px 14px; }
       .console-container { max-width: 100%; }
       /* 内联多列 grid 全部收成单列 */
