@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  incidentops-api:
+    build: .
+    container_name: incidentops-server
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/incidentops_prod.db
+      - ENVIRONMENT=production
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
