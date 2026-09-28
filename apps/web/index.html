@@ -760,7 +760,10 @@
 
     /* ===== 移动端适配（窄屏 ≤720px） ===== */
     @media (max-width: 720px) {
-      body { font-size: 14px; }
+      body { font-size: 14px; line-height: 1.6; }
+      html, body { overflow-x: hidden; max-width: 100%; }
+
+      /* ---- 顶部状态栏：整体纵向堆叠、左右对齐一致 ---- */
       .topbar {
         flex-direction: column;
         align-items: stretch;
@@ -768,27 +771,128 @@
         gap: 12px;
       }
       .brand-area { justify-content: flex-start; align-items: center; gap: 10px; }
-      .brand-text h1 { font-size: 18px; }
-      .nav-tabs { flex-wrap: wrap; }
-      .tab-btn { flex: 1 1 46%; justify-content: center; font-size: 12px; padding: 9px 6px; }
-      .status-group { flex-direction: column; align-items: stretch; gap: 6px; }
-      .status-group .pill {
+      .brand-icon { flex: 0 0 auto; }
+      .brand-text h1 { font-size: 18px; line-height: 1.3; }
+
+      /* 导航按钮：两列等宽网格，高度一致、文字居中 */
+      .nav-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .nav-tabs .tab-btn:last-child {
+        grid-column: 1 / -1;
+        max-width: 60%;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .tab-btn {
+        width: 100%;
+        min-height: 44px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 12.5px;
+        line-height: 1.35;
+        padding: 10px 8px;
+        border-radius: 10px;
+      }
+
+      /* 状态标签：整列堆叠、等高、超长省略号 */
+      .status-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+      }
+      .status-group .pill,
+      .status-group .pill-tenant,
+      .status-group .pill-role {
+        width: 100%;
         max-width: 100%;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        justify-content: flex-start;
+        padding: 6px 12px;
+        box-sizing: border-box;
       }
-      .card { padding: 16px 14px; }
-      .console-container { max-width: 100%; }
-      /* 内联多列 grid 全部收成单列 */
+
+      /* ---- 卡片与容器：统一内边距与宽度 ---- */
+      .card { padding: 16px 14px; border-radius: 14px; margin-bottom: 14px; }
+      .card-title { font-size: 15px; margin-bottom: 10px; }
+      .console-container { max-width: 100%; padding: 0 2px; }
+      .workspace-view { padding: 0; }
+
+      /* ---- 表单控件：统一占满宽度、高度一致 ---- */
+      .input-wrapper, .select-mode { width: 100%; max-width: 100%; }
+      .input-wrapper input, input.input-field, #input-task, .select-mode select {
+        width: 100%;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        min-height: 44px;
+        font-size: 14px;
+      }
+      .btn-action, .btn-primary {
+        width: 100%;
+        min-height: 44px;
+        font-size: 14px;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+      .preset-chips { gap: 6px; }
+      .preset-label { font-size: 12px; }
+
+      /* ---- 网格布局：全部单列，间距统一 ---- */
       [style*="repeat(3"], [style*="repeat(4"], [style*="repeat(5"],
-      .cases-matrix, .ledger-kpis { grid-template-columns: 1fr !important; }
-      /* 输入框在窄屏不再强制最小宽度，避免横向溢出 */
-      .input-wrapper input, input.input-field, #input-task { min-width: 0 !important; }
+      .cases-matrix, .ledger-kpis, .agent-roles-grid, .runbooks-grid,
+      .prop-meta-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+      .kpi-card, .case-category-card, .agent-role-card, .runbook-card {
+        width: 100%; box-sizing: border-box; padding: 12px;
+      }
+      .kpi-value { font-size: 20px; }
+      .kpi-label { font-size: 11.5px; }
+
+      /* ---- 表格：允许横向滚动而不是挤压换行 ---- */
+      .benchmark-table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+      .benchmark-table table { min-width: 560px; }
+
+      /* ---- 拓扑图 / 控制台输出：容器内滚动 ---- */
+      .topology-container { overflow-x: auto; }
+      .console-box { overflow-x: auto; font-size: 12px; }
+      pre, code { white-space: pre-wrap; word-break: break-word; max-width: 100%; }
+
+      /* ---- 时间线 / 证据链 ---- */
+      .timeline-row { padding: 8px 0; }
+      .timeline-msg { font-size: 12.5px; }
+      .evidence-cloud { gap: 6px; }
+
+      /* ---- 弹窗：自适应屏幕、内部滚动 ---- */
+      .modal-content {
+        width: calc(100vw - 32px);
+        max-width: calc(100vw - 32px);
+        max-height: 82vh;
+        overflow-y: auto;
+        box-sizing: border-box;
+      }
+
+      /* ---- 底部快捷导航 ---- */
+      .quick-nav-footer { gap: 8px; flex-wrap: wrap; }
+      .quick-nav-link { font-size: 12px; padding: 6px 10px; }
+
+      /* 图片与 svg 不允许撑破容器 */
+      img, svg { max-width: 100%; height: auto; }
     }
     @media (max-width: 400px) {
-      .tab-btn { font-size: 11px; }
+      body { font-size: 13.5px; }
+      .brand-text h1 { font-size: 16px; }
+      .nav-tabs { grid-template-columns: 1fr; }
+      .tab-btn { font-size: 12px; }
       .pill { font-size: 11px; }
+      .card { padding: 14px 12px; }
     }
   </style>
 </head>
