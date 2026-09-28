@@ -757,6 +757,33 @@
       font-size: 12px;
     }
     .case-cat-title { font-weight: 700; color: var(--title); margin-bottom: 6px; }
+
+    /* ===== 移动端适配（窄屏 ≤720px） ===== */
+    @media (max-width: 720px) {
+      body { font-size: 14px; }
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 14px;
+        gap: 12px;
+      }
+      .brand-area { justify-content: flex-start; }
+      .brand-text h1 { font-size: 18px; }
+      .nav-tabs { flex-wrap: wrap; }
+      .tab-btn { flex: 1 1 46%; justify-content: center; font-size: 12px; padding: 9px 6px; }
+      .status-group { flex-wrap: wrap; gap: 6px; }
+      .card { padding: 16px 14px; }
+      .console-container { max-width: 100%; }
+      /* 内联多列 grid 全部收成单列 */
+      [style*="repeat(3"], [style*="repeat(4"], [style*="repeat(5"],
+      .cases-matrix, .ledger-kpis { grid-template-columns: 1fr !important; }
+      /* 输入框在窄屏不再强制最小宽度，避免横向溢出 */
+      .input-wrapper input, input.input-field, #input-task { min-width: 0 !important; }
+    }
+    @media (max-width: 400px) {
+      .tab-btn { font-size: 11px; }
+      .pill { font-size: 11px; }
+    }
   </style>
 </head>
 <body>
