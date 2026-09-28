@@ -1,0 +1,38 @@
+# === 凭据与本地配置 ===
+.env
+.env.*
+!.env.example
+*.local
+
+# === 本地数据库与合成数据产物 ===
+# 合成数据库不入库；重置走 scripts/seed 或 seed_synthetic_data
+data/synthetic/*.db
+data/synthetic/*.db-journal
+data/synthetic/*.db-wal
+*.sqlite
+*.sqlite3
+
+# === Python ===
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# === Node / 前端 ===
+node_modules/
+.vite/
+coverage/
+
+# === 日志与未脱敏产物 ===
+*.log
+logs/
+evals/results/*.local.json
+
+.wrangler/
+

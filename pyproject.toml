@@ -1,0 +1,18 @@
+[project]
+name = "enterprise-agent-lab"
+version = "0.1.0"
+description = "OpsDesk：企业软件支持 Agent（个人项目 / 合成数据原型）"
+requires-python = ">=3.10"
+dependencies = [
+    "sqlalchemy>=2.0,<2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<10",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["packages"]
+addopts = "-q"
