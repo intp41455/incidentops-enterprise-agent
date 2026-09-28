@@ -1,7 +1,17 @@
-"""业务工具实现。统一返回 `{ok, data, evidence, error, retryable}`。
+"""统一工具层：`get_import_job` 与 `get_job_logs`。
 
-权限靠结构保证：对模型暴露的工具入口只含业务参数，
-tenant_id/role 在 `build_tool_registry()` 闭包里绑定。"""
+统一返回结构（开工手册 §6.4）：
+
+    {ok, data, evidence, error, retryable}
+
+错误码至少包含：`NOT_FOUND_OR_FORBIDDEN` / `INVALID_ARGUMENT` / `TIMEOUT` /
+`STALE_VERSION` / `BUDGET_EXCEEDED`。
+
+**权限靠结构保证，不靠提示词**：工具函数签名为 `tool(session, ctx, ...)`，
+`ctx` 由服务端构造；对模型暴露的入口由 `build_tool_registry()` 生成，
+其可调用签名只含业务参数（`job_id`、`limit`），租户与角色在闭包里绑定。
+见 docs/decisions.md D-004、D-005。
+"""
 
 from __future__ import annotations
 

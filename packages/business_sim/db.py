@@ -1,4 +1,8 @@
-"""数据库连接与会话工厂。默认 SQLite，生产改 DATABASE_URL 切 PostgreSQL。"""
+"""数据库连接与初始化。
+
+D1 用 SQLite 便于零依赖跑通；切换 PostgreSQL 只需改 DATABASE_URL。
+取舍理由与重审时点见 docs/decisions.md D-001。
+"""
 
 from __future__ import annotations
 

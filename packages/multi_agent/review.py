@@ -1,4 +1,11 @@
-"""审查 Agent。检查证据链是否闭环，不通过则 REWORK（最多 2 轮）或 ESCALATE。"""
+"""ReviewAgent 审查智能体（质检与复核核心）。
+
+专责证据链与规程复核：
+1. 检查关键主张是否具备真实 evidence ID（无证据主张直接驳回）；
+2. 检查多任务排查是否符合'独立证据、禁止强行归并'（RB-INCIDENT-TRIAGE）；
+3. 检查超时任务重试是否满足'必须先核实幂等状态'（RB-ERR-TIMEOUT-RETRY）；
+4. 审查不通过时，触发退回补查（REWORK，上限2轮）；超限或冲突严重时转人工（ESCALATE）。
+"""
 
 from __future__ import annotations
 
@@ -44,7 +51,7 @@ class ReviewAgent:
             # 检查是否有未证假设误将二者合并
             for h in diagnosis_result.hypotheses:
                 if "同一原因" in h.claim and h.status == "confirmed":
-                    contradictions.append("不同任务错误码不同，不应合并为单一原因")
+                    contradictions.append("违反 RB-INCIDENT-TRIAGE：不同任务错误码不同，禁止合并为单一原因")
 
         # 3. 检查重试前置条件与证据缺口
         if remediation_result.missing_information:
@@ -58,7 +65,7 @@ class ReviewAgent:
             if prop.action_type == "retry_import_job":
                 # 检查该提案的具体目标任务是否属于数据格式错误
                 if any(f"任务 {prop.target_id}" in f.claim and "INVALID_DATE" in f.claim for f in diagnosis_result.facts):
-                    contradictions.append(f"任务 {prop.target_id} 属数据格式错误，不应直接重试")
+                    contradictions.append(f"违反 RB-ERR-INVALID-DATE：任务 {prop.target_id} 属数据格式错误，严禁直接重试")
 
 
         # 4. 裁决决策

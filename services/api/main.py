@@ -1,4 +1,16 @@
-"""FastAPI 服务入口。提供任务、SSE 事件、审批、证据、评测接口和工作台页面。"""
+"""FastAPI 企业级工作台服务入口。
+
+严格遵循开工手册 §6.7 API 合同：
+- POST /runs: 创建任务，返回 run_id（身份从认证头注入）
+- GET /runs/{id}: 读任务状态与最终结果
+- GET /runs/{id}/events: SSE 读已授权的执行事件，支持流式实时推送
+- POST /runs/{id}/answers: 回复追问，推进原任务
+- POST /proposals/{id}/approve: 校验审批者权限、Hash与业务版本，批准提案
+- POST /proposals/{id}/reject: 拒绝提案
+- GET /evidence/{id}: 证据详情读取与权限校验
+- GET /evals/summary: 返回同题 A/B/C 实测评测数据
+- GET /: 交付交互式 Web 工作台
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,8 @@
-"""业务表 ORM 模型。所有业务表都带 tenant_id。"""
+"""合成业务数据的 ORM 模型。
+
+对应开工手册 §6.7 的业务表。**所有业务表都带 tenant_id 归属**，
+仓储层强制按租户过滤（见 repository.py），不依赖调用方自觉。
+"""
 
 from __future__ import annotations
 
@@ -84,7 +88,7 @@ class SyntheticFault(Base):
 
     按 (tool_name, target_id) 注入 TIMEOUT 等故障，让失败路径由数据触发，
     而不是写死在代码里。只存在于合成环境，接真实系统前必须整表移除。
-    （合成测试数据，接真实系统前移除。）
+    见 docs/decisions.md D-006。
     """
 
     __tablename__ = "synthetic_faults"

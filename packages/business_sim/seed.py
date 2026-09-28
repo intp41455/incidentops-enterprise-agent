@@ -1,4 +1,12 @@
-"""合成数据种子。只允许写入路径含 `synthetic` 的库或内存库，防止误写生产库。"""
+"""合成数据种子。
+
+两条硬约束：
+
+1. **只允许写入合成数据库**（见 docs/decisions.md D-003），路径须含 `synthetic` 或为内存库。
+2. 数据全部虚构，与任何真实企业、真实员工无关。
+
+`seed_synthetic_data()` 会重建表结构，用于"可重置"的合成环境。
+"""
 
 from __future__ import annotations
 
@@ -35,7 +43,7 @@ def assert_synthetic_target(engine: Engine) -> None:
         return
     raise RuntimeError(
         f"拒绝写入非合成数据库：{url}。"
-        "种子脚本只允许写入路径含 'synthetic' 的库或内存库。"
+        "种子脚本只允许写入路径含 'synthetic' 的库或内存库（docs/decisions.md D-003）。"
     )
 
 

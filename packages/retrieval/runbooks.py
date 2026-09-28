@@ -80,8 +80,8 @@ RUNBOOK_CHUNKS: Sequence[RunbookChunk] = (
         content=(
             "现象：任务状态显示 failed，错误码为 UPSTREAM_TIMEOUT。\n"
             "核心风险：上游导入服务处理慢或网络抖动导致连接超时，但底层数据可能已经部分或全部写入！\n"
-            "前置条件：\n"
-            "1. 未确认幂等状态前不要重试，避免重复写入；\n"
+            "强制前置条件（铁律）：\n"
+            "1. 严禁在未确认幂等状态前盲目重试任务！盲目重试将导致数据库双写、重复发薪等灾难事故；\n"
             "2. 必须先调用 check_prerequisites(target_id, 'idempotency_status') 查询幂等与落库状态；\n"
             "3. 仅当 check_prerequisites 返回 passed（确认无重复写入）且上游心跳正常时，才允许提出重试建议；\n"
             "4. 若幂等状态为 unknown 或失败，必须报告证据缺口，退回补查或升级为人工介入（needs_human）。"

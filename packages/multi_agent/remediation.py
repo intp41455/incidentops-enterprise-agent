@@ -1,4 +1,11 @@
-"""方案 Agent。负责查规程、核前置条件、生成动作提案草案。"""
+"""RemediationAgent 方案智能体。
+
+专责规程核对与修复提案制定：
+- 仅授权使用方案与前置核查工具：search_runbooks, check_prerequisites；
+- 依据诊断事实核对对应版本的操作手册；
+- 针对超时任务，严格执行'必须先核验幂等状态'铁律；
+- 拟定不可变的动作提案草案（ActionProposalDraft）。
+"""
 
 from __future__ import annotations
 
@@ -86,7 +93,7 @@ class RemediationAgent:
                     prereq_data = prereq_res["data"]
                     if prereq_data["status"] == "unknown":
                         # 发现证据缺口！
-                        missing_info.append(f"任务 {job_id} 上游超时后幂等落库状态未知，暂不能发起重试")
+                        missing_info.append(f"任务 {job_id} 上游超时后幂等落库状态未知，依据 RB-ERR-TIMEOUT-RETRY 严禁直接发起重试")
                     elif prereq_data["status"] == "passed":
                         facts.append(
                             FactClaim(
@@ -107,7 +114,7 @@ class RemediationAgent:
             elif err_code == "INVALID_DATE":
                 facts.append(
                     FactClaim(
-                        claim=f"任务 {job_id} 属数据格式错误，不应在原数据上直接重试",
+                        claim=f"依据 RB-ERR-INVALID-DATE，任务 {job_id} 属数据格式错误，严禁在原数据上直接重试",
                         evidence_ids=["ev-runbook-chunk-err-invalid-date"],
                         source_tool="search_runbooks",
                     )

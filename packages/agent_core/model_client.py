@@ -1,7 +1,17 @@
-"""OpenAI 兼容的模型调用客户端。
+"""统一模型调用客户端（OpenAI 兼容 chat/completions）。
 
-真实调用走 `ModelClient`；没有 key 或调用失败时直接抛异常，不伪造结果。
-离线演示/回归用 `OfflineStubModelClient`，会显式标记 `usage_source="offline-stub"`。
+依据《AI-Agent项目开工手册》§3，选 API 只检查四点：能访问、支持工具调用、
+能返回用量、价格能查清。本模块落地前三点；价格由 `PRICE_PER_1M_INPUT_CNY` /
+`PRICE_PER_1M_OUTPUT_CNY` 显式配置，**未配置则不做费用估算**（`pricing_verified=False`），
+避免用别家模型的单价冒充本模型单价。
+
+**不做静默降级（decisions.md D-008）**：
+- 没有 Key、或调用抛异常时，一律抛 `ModelUnavailableError`；
+- 离线确定性行为必须由调用方显式选择 `OfflineStubModelClient`；
+- 离线桩返回的 token 数为 0、费用为 0、`usage_source="offline-stub"`，
+  从数据上就无法被当成"真实调用"计入统计。
+
+这样保证"模拟结果不得说成真实运行"这条铁律由代码结构兜住，而不是靠人自觉。
 """
 
 from __future__ import annotations
@@ -121,7 +131,7 @@ class ModelClient:
         if self._client is None:
             raise ModelUnavailableError(
                 "模型未配置完整（需要 MODEL_BASE_URL / MODEL_API_KEY / MODEL_NAME），"
-                "不伪造模型结果"
+                "按开工手册 §15 收缩范围，不伪造模型结果"
             )
 
         call_kwargs: dict[str, Any] = {

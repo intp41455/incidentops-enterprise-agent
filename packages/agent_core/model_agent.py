@@ -1,7 +1,18 @@
-"""真实 LLM 驱动的单 Agent 工具循环。
+"""ModelDrivenOpsDesk：由**真实模型**驱动的单 Agent 工具循环（Baseline A 的真实实现）。
 
-和 `single_agent/agent.py` 的区别：那个是确定性脚本（用来跑测试/回归），
-这个走真实模型 tool_calls。"""
+与 `packages/single_agent/agent.py` 的区别（务必分清，见 docs/progress.md）：
+
+| | single_agent/agent.py | 本模块 |
+|---|---|---|
+| 决策来源 | 正则 + 写死的工具序列 | 模型返回的 `tool_calls` |
+| 是否调用模型 | **否**（确定性脚本，离线演示/回归用） | **是**（真实闭环） |
+| 可否用于 D2 费用与轨迹记录 | 不可 | 可以 |
+
+安全边界：
+- 工具入口由 `build_tool_registry()` 生成，签名只含业务参数，租户与角色由闭包绑定（D-004）；
+- 预算熔断（步数 / 工具次数 / 费用）由 `ExecutionBudget` 强制（开工手册 §7.6）；
+- 模型不可用时**显式失败**，不返回编造结论（D-008）。
+"""
 
 from __future__ import annotations
 

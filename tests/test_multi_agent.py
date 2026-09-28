@@ -39,10 +39,10 @@ def test_multi_agent_m02_triggers_rework_loop(session, ctx_a_operator):
     rework_events = [e for e in summary["events"] if e["event_type"] == "rework_requested"]
     assert len(rework_events) >= 1, "必须触发由数据驱动的审查退回事件，证明非写死单向流水线"
 
-    # 2. 未知缺口不得被清空，终态必须为 needs_human，不能生成重试提案
+    # 2. 检查 R02 核心整改：未知缺口不得被清空，终态必须为 needs_human，严禁生成重试提案
     assert res["status"] == "needs_human", "前置核查为 unknown 时必须升级人工介入，不得伪造通过"
-    assert res["action_proposal"] is None, "前置条件未满足时不能签发重试提案"
-    assert "暂不能发起重试" in res["output"] or "升级" in res["output"]
+    assert res["action_proposal"] is None, "前置条件未满足时严禁签发重试提案"
+    assert "严禁盲目发起重试" in res["output"] or "升级" in res["output"]
 
 
 def test_multi_agent_passed_prereq_allows_retry(session, ctx_a_operator):
@@ -91,7 +91,7 @@ def test_model_driven_coordinator_stub_loop(session, ctx_a_operator):
 
 
 def test_model_driven_coordinator_reports_unavailable(session, ctx_a_operator):
-    """未配置模型凭据时，模型驱动模式必须显式报错，不能静默假装成功。"""
+    """未配置模型凭据时，模型驱动模式必须显式报错，严禁静默假装成功。"""
     from agent_core.model_client import ModelClient
     from multi_agent.llm_coordinator import ModelDrivenCoordinatorAgent
 

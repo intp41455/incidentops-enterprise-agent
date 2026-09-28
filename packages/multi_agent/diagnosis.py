@@ -1,4 +1,10 @@
-"""只读诊断 Agent。负责查任务、查日志、校验 CSV，输出带证据的事实。"""
+"""DiagnosisAgent 诊断智能体。
+
+专责技术事实调查：
+- 仅授权使用技术只读工具：get_import_job, get_job_logs, validate_csv；
+- 独立调查传入 scope 中的每个任务；
+- 输出严格挂载 evidence ID 的事实列表 FactClaim，不擅自推断规程或写操作。
+"""
 
 from __future__ import annotations
 

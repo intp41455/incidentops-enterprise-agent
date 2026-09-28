@@ -1,4 +1,12 @@
-"""单 Agent 基线（确定性脚本）。按固定流程查任务、查日志、找规程、生成提案。"""
+"""OpsDesk 单智能体（Baseline A）。
+
+对应开工手册 §6：
+- 具备完整工具访问权限；
+- 支持缺信息追问（waiting_user）；
+- 支持工具失败有限重试；
+- 能够依据观察结果调整步骤，关联真实工具证据；
+- 需写入时仅生成提案草案，等待人工审批（waiting_approval）。
+"""
 
 from __future__ import annotations
 

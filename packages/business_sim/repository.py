@@ -1,5 +1,12 @@
-"""仓储层。所有业务查询强制 keyword-only 传入 tenant_id，
-跨租户统一返回 None，避免泄漏目标是否存在。"""
+"""仓储层：**强制**按租户过滤。
+
+设计要点（对应开工手册 §6.7）：
+
+1. 所有业务查询的 `tenant_id` 都是 keyword-only 必填参数，调用方无法省略。
+2. 跨租户查询返回 `None`，不区分"不存在"与"无权访问"，避免泄漏目标是否存在
+   （见 docs/decisions.md D-005）。
+3. 过滤发生在仓储层，而不是靠调用方自觉；未来接入 Postgres RLS 是第二道防线，不是替代。
+"""
 
 from __future__ import annotations
 

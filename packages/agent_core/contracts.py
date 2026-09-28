@@ -1,4 +1,13 @@
-"""Agent 之间传递的数据结构。"""
+"""智能体间交接协议与数据契约（contracts）。
+
+严格对应开工手册 §7.4 与 FindYourself 规格 §3：
+- TaskEnvelope: 子任务派发包（限定上下文与工具边界）
+- FactClaim: 技术事实（必须挂载真实 evidence ID）
+- Hypothesis: 未证假设
+- AgentResult: 专家智能体结构化输出
+- ActionProposalDraft: 待审批动作提案草案
+- ReviewVerdict: 审查智能体裁决（通过 / 退回补查 / 转人工）
+"""
 
 from __future__ import annotations
 

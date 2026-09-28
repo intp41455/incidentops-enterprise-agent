@@ -39,10 +39,10 @@ def test_search_runbooks_respects_version_filter(session, ctx_a_viewer):
 
 
 def test_search_runbooks_finds_timeout_retry_prerequisites(session, ctx_a_viewer):
-    """搜索超时重试，必须检索出强调'先查幂等状态再重试'的规程。"""
+    """搜索超时重试，必须检索出强调'核对幂等状态、严禁盲目重试'的规程。"""
     res = search_runbooks(session, ctx_a_viewer, query="UPSTREAM_TIMEOUT 超时重试", product_version="v1")
 
     assert res["ok"] is True
     snippets = " ".join([h["snippet"] for h in res["data"]["hits"]])
-    assert "未确认幂等状态前不要重试" in snippets
+    assert "严禁在未确认幂等状态前盲目重试" in snippets
     assert "check_prerequisites" in snippets

@@ -1,4 +1,12 @@
-"""多 Agent 协调器。负责派活给 Diagnosis、Remediation、Review，处理 REWORK 循环。"""
+"""CoordinatorAgent 协调智能体与协同编排核心。
+
+专责全局路由、动态派发、聚合与审批对接：
+1. 识别意图与任务目标，动态派发给 DiagnosisAgent 与 RemediationAgent；
+2. 调度 ReviewAgent 进行证据链复核与合规质检；
+3. 处理 ReviewAgent 的 REWORK 退回重办机制（最多 2 轮）；
+4. 无法消除矛盾或超时工具故障时升级为 ESCALATE（转人工 needs_human）；
+5. 经 ReviewAgent 批准的提案落库持久化为不可变 ActionProposal，进入 waiting_approval 状态。
+"""
 
 from __future__ import annotations
 
@@ -204,7 +212,7 @@ class CoordinatorAgent:
                 # 补查仍未能满足前置条件，证据缺口无法消除，严格转人工介入 (ESCALATE)
                 verdict = ReviewVerdict(
                     decision="ESCALATE",
-                    reason=f"前置核查状态仍未明确或不满足安全重试条件（缺口: {'; '.join(verdict.missing_evidence)}），已升级转人工介入",
+                    reason=f"前置核查状态仍未明确或不满足安全重试条件（缺口: {'; '.join(verdict.missing_evidence)}），依据 RB-ERR-TIMEOUT-RETRY 严禁盲目发起重试提案，已升级转人工介入",
                     missing_evidence=verdict.missing_evidence,
                     contradictions=verdict.contradictions,
                     approved_proposal=None,
