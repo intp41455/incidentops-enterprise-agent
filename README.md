@@ -58,37 +58,6 @@
 
 系统采用分层松耦合架构，核心协作逻辑由 `CoordinatorAgent` 驱动，并由 `ReviewAgent` 担当客观门禁：
 
-```mermaid
-graph TD
-    User([业务操作员 / 运维工程师]) -->|提交排查需求 / 故障指令| Coord[CoordinatorAgent 协同编排中枢]
-    
-    subgraph MultiAgentRuntime [多智能体协同与质检运行时]
-        Coord -->|派发技术查证 TaskEnvelope| Diag[DiagnosisAgent 诊断专家]
-        Coord -->|派发规程核对 TaskEnvelope| Rem[RemediationAgent 方案专家]
-        
-        Diag -->|专属工具: get_job / logs / validate_csv| DiagTools[(只读探针工具集)]
-        Rem -->|专属工具: search_runbooks / check_prereq| RemTools[(知识库与前置核查工具集)]
-        
-        Diag -->|返回技术事实列表 + 结构化证据 ID| Coord
-        Rem -->|返回适用规程文档 + 补救行动草案| Coord
-        
-        Coord -->|汇总事实与草案| Rev[ReviewAgent 独立审查质检门禁]
-        
-        Rev -->|核查发现证据缺口 / 依赖未闭环| ReworkCheck{自纠轮次 <= 2?}
-        ReworkCheck -->|是: 触发 REWORK| Coord
-        ReworkCheck -->|否: 无法消解矛盾| EscalateState[升级转人工介入 needs_human]
-        
-        Rev -->|核查通过: 证据链完备且事实闭环| Proposal[生成不可变提案 ActionProposal]
-    end
-
-    Proposal -->|挂载凭据芯片，推送到待审批区| ApprovalGate{两阶段人工审批门禁}
-    ApprovalGate -->|审批人驳回| RejectedState[提案归档 rejected / 零副作用]
-    ApprovalGate -->|审批人批准 POST /approve| Exec[确定性安全执行器 SafeExecutor]
-    
-    Exec -->|校验 SHA256 签名 + 租户权限 + 幂等键| BusinessDB[(业务数据库)]
-    Exec -->|返回执行落库凭据| Finish([生成受控治理工单 TICK-xxx])
-```
-
 <p align="center">
   <img src="docs/images/topology_view.png" alt="Multi-Agent Topology and Guardrails" width="900" style="border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12);" />
 </p>
