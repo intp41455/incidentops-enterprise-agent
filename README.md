@@ -58,6 +58,23 @@
 
 系统采用分层松耦合架构，核心协作逻辑由 `CoordinatorAgent` 驱动，并由 `ReviewAgent` 担当客观门禁：
 
+```mermaid
+flowchart TD
+    A["运维人员"] --> B["Web / API"]
+    B --> C["CoordinatorAgent 任务编排"]
+    C --> D["DiagnosisAgent 只读诊断"]
+    C --> E["RemediationAgent 规程检索"]
+    D --> F["只读探针：任务、日志、CSV"]
+    E --> G["Runbook 与前置核查"]
+    F --> H["ReviewAgent 证据与安全校验"]
+    G --> H
+    H --> I["ActionProposal 待审批提案"]
+    I --> J["人工审批"]
+    J --> K["SafeExecutor 受控执行"]
+```
+
+ReviewAgent 发现证据缺口时会触发限次补查；未获人工审批的提案不会进入执行器。
+
 <p align="center">
   <img src="docs/images/topology_view.png" alt="Multi-Agent Topology and Guardrails" width="900" style="border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12);" />
 </p>
