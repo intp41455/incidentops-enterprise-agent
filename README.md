@@ -60,20 +60,29 @@
 
 ```mermaid
 flowchart TD
-    A["运维人员"] --> B["Web / API"]
-    B --> C["CoordinatorAgent 任务编排"]
-    C --> D["DiagnosisAgent 只读诊断"]
-    C --> E["RemediationAgent 规程检索"]
-    D --> F["只读探针：任务、日志、CSV"]
-    E --> G["Runbook 与前置核查"]
-    F --> H["ReviewAgent 证据与安全校验"]
-    G --> H
-    H --> I["ActionProposal 待审批提案"]
-    I --> J["人工审批"]
-    J --> K["SafeExecutor 受控执行"]
+    User["操作员 / 审批人"] -->|提交排查请求| Coord["CoordinatorAgent<br/>任务编排"]
+    subgraph Runtime["多智能体协同与质检运行时"]
+        Coord -->|技术查证| Diag["DiagnosisAgent"]
+        Coord -->|规程核对| Rem["RemediationAgent"]
+        Diag -.-> DiagTools["只读工具<br/>任务 / 日志 / CSV"]
+        Rem -.-> RemTools["Runbook 检索<br/>前置核查"]
+        Diag --> Facts["技术事实与证据 ID"]
+        Rem --> Draft["适用规程与动作草案"]
+        Facts --> Rev["ReviewAgent<br/>独立质检"]
+        Draft --> Rev
+        Rev -->|PASS| Proposal["ActionProposal<br/>待审批提案"]
+        Rev -->|REWORK 最多 2 轮| Rework["定向补查"]
+        Rev -->|ESCALATE| Escalation["转人工 needs_human"]
+    end
+    Proposal --> Gate{"人工审批门禁"}
+    Gate -->|拒绝| Rejected["归档 rejected"]
+    Gate -->|批准| Exec["确定性执行器"]
+    Exec --> Check["校验参数哈希<br/>租户权限 / 幂等键"]
+    Check --> DB[("业务数据库")]
+    DB --> Finish["生成工单 TICK-xxx"]
 ```
 
-ReviewAgent 发现证据缺口时会触发限次补查；未获人工审批的提案不会进入执行器。
+图中虚线表示工具权限边界；`REWORK` 由 Coordinator 定向重派，最多 2 轮，仍无法消除冲突则转人工。审批接口为 `POST /proposals/{proposal_id}/approve`；未获人工审批的提案不会进入执行器。
 
 <p align="center">
   <img src="docs/images/topology_view.png" alt="Multi-Agent Topology and Guardrails" width="900" style="border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12);" />
